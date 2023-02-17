@@ -11,6 +11,11 @@ Add it as a maven dependency or just [download the latest release](https://githu
 </dependency>
 ```
 
+## Links
+* [Website](https://konloch.com/FastStringUtils/)
+* [Discord Server](https://discord.gg/aexsYpfMEf)
+* [Download Releases](https://konloch.com/FastStringUtils/releases)
+
 ## How To Use
 This is a very small library and only contains a handful of functions.
 
@@ -38,8 +43,3 @@ boolean isInteger = FastStringUtils.isInteger("1");
 boolean isDouble = FastStringUtils.isDouble("1.0D");
 boolean isFloat = FastStringUtils.isFloat("1.0F");
 ```
-
-## Links
-* [Website](https://konloch.com/FastStringUtils/)
-* [Discord Server](https://discord.gg/aexsYpfMEf)
-* [Download Releases](https://konloch.com/FastStringUtils/releases)
