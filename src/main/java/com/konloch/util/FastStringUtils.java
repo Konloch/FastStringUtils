@@ -207,7 +207,10 @@ public class FastStringUtils
 					
 					found.add(builder.toString());
 					builder = new StringBuilder();
-					builder.append(c);
+					
+					//only append the character if the separator is a single character
+					if(sepChars.length == 1)
+						builder.append(c);
 				}
 			}
 			else
@@ -226,7 +229,7 @@ public class FastStringUtils
 			}
 		}
 		
-		//add whatevers left
+		//add whatever is left
 		if(builder.length() > 0)
 			found.add(builder.toString());
 		
@@ -239,8 +242,16 @@ public class FastStringUtils
 			
 			//read the rest of the split content
 			StringBuilder sb = new StringBuilder();
-			for(int i = maxAmount; i < found.size(); i++)
+			boolean b = false;
+			for(int i = maxAmount-1; i < found.size(); i++)
+			{
+				if(!b)
+					b = true;
+				else
+					sb.append(separator);
+				
 				sb.append(found.get(i));
+			}
 			
 			trimmedList.add(sb.toString());
 			return trimmedList.toArray(new String[0]);

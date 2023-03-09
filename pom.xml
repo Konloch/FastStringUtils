@@ -3,7 +3,7 @@
 
 	<groupId>com.konloch</groupId>
 	<artifactId>FastStringUtils</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.2</version>
 
 	<name>FastStringUtils</name>
 	<description>FastStringUtils is an easy-to-use zero dependency collection of very fast String utility functions for Java.</description>

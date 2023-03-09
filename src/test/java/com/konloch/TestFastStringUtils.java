@@ -20,27 +20,48 @@ public class TestFastStringUtils
 				+ ", Int: " + isInteger + ", Double: " + isDouble + ", Float: " + isFloat);
 		System.out.println();
 		
-		String[] test = FastStringUtils.split("Testing Split", " ");
 		
-		for(int i = 0; i < test.length; i++)
-			System.out.println("Split Results: "+i+"=" + test[i]);
-
+		String[] testSplit = FastStringUtils.split("A B C D E F", " ", 2);
+		
+		assert testSplit.length == 2;
+		
+		assert testSplit[0].equals("A");
+		
+		assert testSplit[1].equals("B C D E F");
+		
+		testSplit = FastStringUtils.split("A B C D E F", " ", 3);
+		
+		assert testSplit.length == 3;
+		
+		assert testSplit[0].equals("A");
+		
+		assert testSplit[1].equals("B");
+		
+		assert testSplit[2].equals("C D E F");
+		
+		System.out.println("Test-0: `" + testSplit[0] + "`");
+		System.out.println("Test-1: `" + testSplit[1] + "`");
+		System.out.println("Test-2: `" + testSplit[2] + "`");
 		System.out.println();
-		test = FastStringUtils.split("Testing Split With Many Instances", " ");
 		
-		for(int i = 0; i < test.length; i++)
-			System.out.println("Split Results: "+i+"=" + test[i]);
+		testSplit = FastStringUtils.split("testing words removal", " words ", -1, false);
 		
+		assert testSplit[0].equals("testing");
+		
+		assert testSplit[1].equals("removal");
+		
+		System.out.println("Test-0: `" + testSplit[0] + "`");
+		System.out.println("Test-1: `" + testSplit[1] + "`");
 		System.out.println();
-		test = FastStringUtils.split("Testing Split With A Limiter", " ", 2);
 		
-		for(int i = 0; i < test.length; i++)
-			System.out.println("Split Results: "+i+"=" + test[i]);
+		testSplit = FastStringUtils.split("uniquewordremoval", "word", -1, false);
 		
+		assert testSplit[0].equals("unique");
+		
+		assert testSplit[1].equals("removal");
+		
+		System.out.println("Test-0: `" + testSplit[0] + "`");
+		System.out.println("Test-1: `" + testSplit[1] + "`");
 		System.out.println();
-		test = FastStringUtils.split("Testing Split With A Longer Limiter", " ", 4);
-		
-		for(int i = 0; i < test.length; i++)
-			System.out.println("Split Results: "+i+"=" + test[i]);
 	}
 }
