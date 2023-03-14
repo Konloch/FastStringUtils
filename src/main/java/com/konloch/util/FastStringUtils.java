@@ -172,92 +172,100 @@ public class FastStringUtils
 	 */
 	public static String[] split(String s, String separator, int maxAmount, boolean preserveSeparator)
 	{
-		ArrayList<String> found = new ArrayList<>();
-		StringBuilder builder = new StringBuilder();
-		StringBuilder searchBuilder = new StringBuilder();
+		ArrayList<String> results = new ArrayList<>();
+		
+		StringBuilder buffer = new StringBuilder();
+		StringBuilder searchBuffer = new StringBuilder();
+		
 		char[] lineChars = s.toCharArray();
 		char[] sepChars = separator.toCharArray();
 		
-		boolean searchingFlag = false;
+		boolean isSearching = false;
 		int searchIndex = 0;
 		
 		for(char c : lineChars)
 		{
-			if(searchingFlag)
+			if(isSearching)
 			{
 				//if current c isn't found while searching
 				if(searchIndex < sepChars.length && c != sepChars[searchIndex++])
 				{
-					searchingFlag = false;
-					builder.append(searchBuilder);
-					searchBuilder = new StringBuilder();
+					isSearching = false;
+					buffer.append(searchBuffer);
+					searchBuffer = new StringBuilder();
 					searchIndex = 0;
 				}
 				
 				//completely found, search is over, time for next iteration
-				if(searchIndex == sepChars.length)
+				if(searchIndex >= sepChars.length)
 				{
-					searchingFlag = false;
+					boolean multiCharSearch = searchIndex > 1;
+					
+					//restart the search for this character since we have ended
+					isSearching = false;
 					
 					if(preserveSeparator)
-						builder.append(searchBuilder);
+						buffer.append(searchBuffer);
 					
-					searchBuilder = new StringBuilder();
+					searchBuffer = new StringBuilder();
 					searchIndex = 0;
 					
-					found.add(builder.toString());
-					builder = new StringBuilder();
+					if(buffer.length() != 0)
+						results.add(buffer.toString());
 					
-					//only append the character if the separator is a single character
-					if(sepChars.length == 1)
-						builder.append(c);
+					buffer = new StringBuilder();
+					
+					if(multiCharSearch)
+						continue;
 				}
 			}
-			else
+			
+			//else
+			if(!isSearching)
 			{
 				//if current c isn't found while searching
 				if(c != sepChars[searchIndex++])
 				{
-					builder.append(c);
+					buffer.append(c);
 					searchIndex = 0;
 				}
 				else
 				{
-					searchingFlag = true;
-					searchBuilder.append(c);
+					isSearching = true;
+					searchBuffer.append(c);
 				}
 			}
 		}
 		
 		//add whatever is left
-		if(builder.length() > 0)
-			found.add(builder.toString());
+		if(buffer.length() > 0)
+			results.add(buffer.toString());
 		
 		//trim amount found
-		if(maxAmount > 0 && found.size() > maxAmount)
+		if(maxAmount > 0 && results.size() > maxAmount)
 		{
 			ArrayList<String> trimmedList = new ArrayList<>();
 			for(int i = 0; i < maxAmount-1; i++)
-				trimmedList.add(found.get(i));
+				trimmedList.add(results.get(i));
 			
 			//read the rest of the split content
 			StringBuilder sb = new StringBuilder();
 			boolean b = false;
-			for(int i = maxAmount-1; i < found.size(); i++)
+			for(int i = maxAmount-1; i < results.size(); i++)
 			{
 				if(!b)
 					b = true;
 				else
 					sb.append(separator);
 				
-				sb.append(found.get(i));
+				sb.append(results.get(i));
 			}
 			
 			trimmedList.add(sb.toString());
 			return trimmedList.toArray(new String[0]);
 		}
 		
-		return found.toArray(new String[0]);
+		return results.toArray(new String[0]);
 	}
 	
 	/**
