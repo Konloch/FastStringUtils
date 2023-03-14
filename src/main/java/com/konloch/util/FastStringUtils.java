@@ -172,6 +172,21 @@ public class FastStringUtils
 	 */
 	public static String[] split(String s, String separator, int maxAmount, boolean preserveSeparator)
 	{
+		return split(s, separator, maxAmount, preserveSeparator, true);
+	}
+	
+	/**
+	 * Splits a String with a specified separator String without using regex.
+	 *
+	 * @param s any String
+	 * @param separator any String
+	 * @param maxAmount -1 for unlimited, or else the maximum size of results returned
+	 * @param preserveSeparator if true it will include the separator at the end of each split line
+	 * @param allowEmptyResults is true the results will include empty results on repeating search parameters
+	 * @return a String array split on the separator supplied
+	 */
+	public static String[] split(String s, String separator, int maxAmount, boolean preserveSeparator, boolean allowEmptyResults)
+	{
 		ArrayList<String> results = new ArrayList<>();
 		
 		StringBuilder buffer = new StringBuilder();
@@ -185,6 +200,8 @@ public class FastStringUtils
 		
 		for(char c : lineChars)
 		{
+			boolean completedSearch = false;
+			
 			if(isSearching)
 			{
 				//if current c isn't found while searching
@@ -199,6 +216,7 @@ public class FastStringUtils
 				//completely found, search is over, time for next iteration
 				if(searchIndex >= sepChars.length)
 				{
+					completedSearch = true;
 					boolean multiCharSearch = searchIndex > 1;
 					
 					//restart the search for this character since we have ended
@@ -215,12 +233,12 @@ public class FastStringUtils
 					
 					buffer = new StringBuilder();
 					
+					//TODO multi-line characters search is not fully functional
 					if(multiCharSearch)
 						continue;
 				}
 			}
 			
-			//else
 			if(!isSearching)
 			{
 				//if current c isn't found while searching
@@ -231,8 +249,14 @@ public class FastStringUtils
 				}
 				else
 				{
+					if(allowEmptyResults && completedSearch)
+						results.add("");
+					
+					
 					isSearching = true;
-					searchBuffer.append(c);
+					
+					if(!completedSearch)
+						searchBuffer.append(c);
 				}
 			}
 		}

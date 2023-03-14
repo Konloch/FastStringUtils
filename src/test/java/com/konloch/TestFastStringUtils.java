@@ -2,6 +2,8 @@ package com.konloch;
 
 import com.konloch.util.FastStringUtils;
 
+import java.util.Arrays;
+
 /**
  * @author Konloch
  * @since 2/15/2023
@@ -37,7 +39,7 @@ public class TestFastStringUtils
 		assert testSplit[1].equals("B");
 		assert testSplit[2].equals("C D E F");
 		
-		testSplit = FastStringUtils.split("remove>>>>>>>all", ">", -1, false);
+		testSplit = FastStringUtils.split("remove>>>>>>>all", ">", -1, false, false);
 		
 		assert testSplit.length == 2;
 		assert testSplit[0].equals("remove");
@@ -45,12 +47,33 @@ public class TestFastStringUtils
 		
 		testSplit = FastStringUtils.split("testing words removal", " words ", -1, false);
 		
+		assert testSplit.length == 2;
 		assert testSplit[0].equals("testing");
 		assert testSplit[1].equals("removal");
 		
 		testSplit = FastStringUtils.split("uniquewordremoval", "word", -1, false);
 		
+		assert testSplit.length == 2;
 		assert testSplit[0].equals("unique");
 		assert testSplit[1].equals("removal");
+		
+		testSplit = FastStringUtils.split("A:B::C", ":");
+		
+		assert testSplit.length == 4;
+		assert testSplit[0].equals("A");
+		assert testSplit[1].equals("B");
+		assert testSplit[2].isEmpty();
+		assert testSplit[3].equals("C");
+		
+		//TODO
+		/*testSplit = FastStringUtils.split("A::B::::C", "::");
+		
+		System.out.println("Dump: " + Arrays.toString(testSplit));
+		
+		assert testSplit.length == 4;
+		assert testSplit[0].equals("A");
+		assert testSplit[1].equals("B");
+		assert testSplit[2].isEmpty();
+		assert testSplit[3].equals("C");*/
 	}
 }
