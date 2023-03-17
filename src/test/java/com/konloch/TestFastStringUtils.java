@@ -75,5 +75,48 @@ public class TestFastStringUtils
 		assert testSplit[1].equals("B");
 		assert testSplit[2].isEmpty();
 		assert testSplit[3].equals("C");*/
+		
+		testSplit = FastStringUtils.parseArguments("A B C D E F", 2);
+		
+		assert testSplit.length == 2;
+		assert testSplit[0].equals("A");
+		assert testSplit[1].equals("B C D E F");
+		
+		testSplit = FastStringUtils.parseArguments("A \"B C D E F\"");
+		
+		assert testSplit.length == 2;
+		assert testSplit[0].equals("A");
+		assert testSplit[1].equals("B C D E F");
+		
+		testSplit = FastStringUtils.parseArguments("A \"B C D E\" F");
+		
+		assert testSplit.length == 3;
+		assert testSplit[0].equals("A");
+		assert testSplit[1].equals("B C D E");
+		assert testSplit[2].equals("F");
+		
+		testSplit = FastStringUtils.parseArguments("A \"B C\" \"D E F\"");
+		
+		assert testSplit.length == 3;
+		assert testSplit[0].equals("A");
+		assert testSplit[1].equals("B C");
+		assert testSplit[2].equals("D E F");
+		
+		testSplit = FastStringUtils.parseArguments("A \"B C\" \"D E\" F");
+		
+		assert testSplit.length == 4;
+		assert testSplit[0].equals("A");
+		assert testSplit[1].equals("B C");
+		assert testSplit[2].equals("D E");
+		assert testSplit[3].equals("F");
+		
+		//TODO
+		/*testSplit = FastStringUtils.parseArguments("A \"\\\"B C\\\"\" \"D E\" F");
+		
+		assert testSplit.length == 4;
+		assert testSplit[0].equals("A");
+		assert testSplit[1].equals("\"B C\"");
+		assert testSplit[2].equals("D E");
+		assert testSplit[3].equals("F");*/
 	}
 }
