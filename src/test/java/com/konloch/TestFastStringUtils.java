@@ -104,13 +104,12 @@ public class TestFastStringUtils
 		assert testSplit[2].equals("D E");
 		assert testSplit[3].equals("F");
 		
-		//TODO
-		/*testSplit = FastStringUtils.parseArguments("A \"\\\"B C\\\"\" \"D E\" F");
+		testSplit = FastStringUtils.parseArguments("A \"\\\"B C\\\"\" \"D E\" F");
 		
 		assert testSplit.length == 4;
 		assert testSplit[0].equals("A");
 		assert testSplit[1].equals("\"B C\"");
 		assert testSplit[2].equals("D E");
-		assert testSplit[3].equals("F");*/
+		assert testSplit[3].equals("F");
 	}
 }
