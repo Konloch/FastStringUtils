@@ -292,164 +292,6 @@ public class FastStringUtils
 	}
 	
 	/**
-	 * Splits a String with a specified separator String.
-	 *
-	 * @param s any String
-	 * @param separator any String as the search delimiter
-	 * @param separatorEscape any String as the search delimiter escape
-	 * @param maxAmount -1 for unlimited, or else the maximum size of results returned
-	 * @param preserveSeparator if true it will include the separator at the end of each split line
-	 * @param allowEmptyResults is true the results will include empty results on repeating search parameters
-	 * @return a String array split on the separator supplied
-	 */
-	public static String[] split(String s, String separator, String separatorEscape, int maxAmount, boolean preserveSeparator, boolean allowEmptyResults)
-	{
-		//TODO - separatorEscape should be unrestricted
-		//      + Two searches will need to be added rather than just once
-		//      + Search rollback will also need to be added for strings that have been searched but don't end in the escape
-		if(separatorEscape != null && separatorEscape.length() != 1)
-			throw new RuntimeException("separatorEscape can only be one character in length, use null for none.");
-		
-		ArrayList<String> results = new ArrayList<>();
-		
-		StringBuilder buffer = new StringBuilder();
-		StringBuilder searchBuffer = new StringBuilder();
-		StringBuilder escapeBuffer = new StringBuilder();
-		
-		boolean lookingForEscapeCharacter = separatorEscape != null;
-		char[] lineChars = s.toCharArray();
-		char[] sepChars = separator.toCharArray();
-		char escapeChar = lookingForEscapeCharacter ? separatorEscape.toCharArray()[0] : ' ';
-		
-		boolean isEscaped = false;
-		boolean isSearching = false;
-		int sepCharsIndex = 0;
-		
-		for(char c : lineChars)
-		{
-			boolean completedSearch = false;
-			
-			if(isSearching)
-			{
-				//if current c isn't found while searching
-				if(sepCharsIndex < sepChars.length && c != sepChars[sepCharsIndex++])
-				{
-					isSearching = false;
-					buffer.append(searchBuffer);
-					searchBuffer = new StringBuilder();
-					sepCharsIndex = 0;
-				}
-				
-				//completely found, search is over, time for next iteration
-				if(sepCharsIndex >= sepChars.length)
-				{
-					completedSearch = true;
-					boolean multiCharSearch = sepCharsIndex > 1;
-					
-					//restart the search for this character since we have ended
-					isSearching = false;
-					
-					if(preserveSeparator)
-						buffer.append(searchBuffer);
-					
-					searchBuffer = new StringBuilder();
-					sepCharsIndex = 0;
-					
-					if(buffer.length() != 0)
-						results.add(buffer.toString());
-					
-					buffer = new StringBuilder();
-					
-					//TODO multi-line characters search is not fully functional
-					if(multiCharSearch)
-						continue;
-				}
-			}
-			
-			if(isEscaped)
-			{
-				//if current c is found as the escape characters
-				if(c == escapeChar)
-				{
-					if(buffer.length() != 0)
-						results.add(buffer.toString());
-					
-					buffer = new StringBuilder();
-					buffer.append(escapeBuffer);
-					escapeBuffer = new StringBuilder();
-					isEscaped = false;
-				}
-				else
-				{
-					escapeBuffer.append(c);
-				}
-				continue;
-			}
-			
-			if(!isSearching)
-			{
-				boolean escapedPass = true;
-				
-				if(lookingForEscapeCharacter)
-				{
-					if (c == escapeChar)
-					{
-						escapedPass = false;
-						isEscaped = true;
-					}
-				}
-				
-				//if current c isn't found while searching
-				if(c != sepChars[sepCharsIndex++] && escapedPass)
-				{
-					buffer.append(c);
-					sepCharsIndex = 0;
-				}
-				else
-				{
-					if(allowEmptyResults && completedSearch)
-						results.add("");
-					
-					isSearching = true;
-					
-					if(!completedSearch)
-						searchBuffer.append(c);
-				}
-			}
-		}
-		
-		//add whatever is left
-		if(buffer.length() > 0)
-			results.add(buffer.toString());
-		
-		//trim amount found
-		if(maxAmount > 0 && results.size() > maxAmount)
-		{
-			ArrayList<String> trimmedList = new ArrayList<>();
-			for(int i = 0; i < maxAmount-1; i++)
-				trimmedList.add(results.get(i));
-			
-			//read the rest of the split content
-			StringBuilder sb = new StringBuilder();
-			boolean b = false;
-			for(int i = maxAmount-1; i < results.size(); i++)
-			{
-				if(!b)
-					b = true;
-				else
-					sb.append(separator);
-				
-				sb.append(results.get(i));
-			}
-			
-			trimmedList.add(sb.toString());
-			return trimmedList.toArray(new String[0]);
-		}
-		
-		return results.toArray(new String[0]);
-	}
-	
-	/**
 	 * Parse any string by splitting on space, if a double quote is encountered it will escape until encountered again
 	 *
 	 * @param s any String
@@ -457,19 +299,76 @@ public class FastStringUtils
 	 */
 	public static String[] parseArguments(String s)
 	{
-		return parseArguments(s, -1);
-	}
-	
-	/**
-	 * Parse any string as your command-line interpreter would.
-	 *
-	 * @param s any String
-	 * @param maxAmount
-	 * @return a String array split on the separator supplied
-	 */
-	public static String[] parseArguments(String s, int maxAmount)
-	{
-		return split(s, " ", "\"",  maxAmount, false, false);
+		ArrayList<String> results = new ArrayList<>();
+		
+		StringBuilder buffer = new StringBuilder();
+		StringBuilder escapeBuffer = new StringBuilder();
+		boolean escapeFlag = false;
+		boolean quoteFlag = false;
+		
+		char[] arr = s.toCharArray();
+		for(char c : arr)
+		{
+			boolean delimiter = false;
+			boolean escape = false;
+			boolean quote = false;
+			switch(c)
+			{
+				case ' ':
+					delimiter = true;
+					break;
+				
+				case '\\':
+					escape = true;
+					break;
+				
+				case '"':
+					quote = true;
+					break;
+			}
+			
+			if(escapeFlag && quote)
+			{
+				buffer.append(c);
+				escapeFlag = false;
+				continue;
+			}
+			
+			if(delimiter && !quoteFlag)
+			{
+				results.add(buffer.toString());
+				buffer = new StringBuilder();
+			}
+			else if(escape)
+			{
+				escapeFlag = true;
+				escapeBuffer.append(c);
+			}
+			else if(quote)
+			{
+				quoteFlag = !quoteFlag;
+			}
+			else if(!quoteFlag)
+			{
+				if(escapeFlag)
+				{
+					buffer.append(escapeBuffer);
+					escapeBuffer = new StringBuilder();
+					escapeFlag = false;
+				}
+				
+				buffer.append(c);
+			}
+			else
+			{
+				buffer.append(c);
+			}
+		}
+		
+		if(buffer.length() != 0)
+			results.add(buffer.toString());
+		
+		return results.toArray(new String[0]);
 	}
 	
 	/**

@@ -76,12 +76,6 @@ public class TestFastStringUtils
 		assert testSplit[2].isEmpty();
 		assert testSplit[3].equals("C");*/
 		
-		testSplit = FastStringUtils.parseArguments("A B C D E F", 2);
-		
-		assert testSplit.length == 2;
-		assert testSplit[0].equals("A");
-		assert testSplit[1].equals("B C D E F");
-		
 		testSplit = FastStringUtils.parseArguments("A \"B C D E F\"");
 		
 		assert testSplit.length == 2;
